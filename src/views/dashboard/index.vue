@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">
-      三更博客管理系统
+      xxx小说网管理系统
     </div>
     <div>
       欢迎关注三更的B站账号：<a href="https://space.bilibili.com/663528522">https://space.bilibili.com/663528522</a>   三更草堂

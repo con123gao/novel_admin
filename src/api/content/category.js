@@ -4,7 +4,7 @@ import downloadService from '@/utils/downloadService'
 // 查询分类列表
 export function listCategory(query) {
   return request({
-    url: '/content/category/list',
+    url: '/admin/category/list',
     method: 'get',
     params: query
   })

@@ -27,7 +27,7 @@ export function addUser(data) {
 // 删除用户
 export function delUser(userId) {
   return request({
-    url: '/system/user/' + userId,
+    url: '/admin/user/deleted' + userId,
     method: 'delete'
   })
 }

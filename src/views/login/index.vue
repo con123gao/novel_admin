@@ -57,8 +57,8 @@
       >Login</el-button>
 
       <div class="tips">
-        <span style="margin-right: 20px">userName: sg</span>
-        <span> password: any</span>
+        <span style="margin-right: 20px">userName </span>
+        <span> password</span>
       </div>
     </el-form>
   </div>

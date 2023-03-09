@@ -1,121 +1,76 @@
 <template>
   <div class="app-container">
-    <el-form
-      v-show="showSearch"
-      ref="queryForm"
-      :model="queryParams"
-      :inline="true"
-      label-width="68px"
-    >
-      <el-form-item label="名称" prop="name">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
+      <el-form-item label="title" prop="title">
         <el-input
-          v-model="queryParams.name"
-          placeholder="请输入名称"
+          v-model="queryParams.title"
+          placeholder="请输入小说名"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="审核状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择" clearable>
-          <el-option :key="'0'" label="审核通过" :value="'0'" />
-          <el-option :key="'1'" label="审核未通过" :value="'1'" />
-          <el-option :key="'2'" label="未审核" :value="'2'" />
-        </el-select>
+      <el-form-item label="author" prop="author">
+        <el-input
+          v-model="queryParams.author"
+          placeholder="请输入作者"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <!-- v-hasPermission="['content:category:export']" 加了这句话之后就有权限才可以访问 -->
         <el-button
-          type="primary"
+          type="warning"
           plain
-          icon="el-icon-plus"
+          icon="el-icon-download"
           size="mini"
-          @click="handleAdd"
-        >新增</el-button>
-      </el-col>
-
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-        >删除</el-button>
+          :loading="exportLoading"
+          @click="handleExport"
+        >导出小说为excel</el-button>
       </el-col>
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="linkList"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" :data="linkList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="描述" align="center" prop="description" />
-      <el-table-column label="logo" align="center" prop="logo" type="img">
+      <el-table-column label="标题" align="center" prop="title" />
+      <el-table-column label="作者" align="center" prop="author" />
+      <el-table-column label="thumbnail" align="center" prop="thumbnail" type="img">
         <template slot-scope="scope">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="scope.row.logo"
-            fit="fill"
-          />
+          <el-image style="width: 100px; height: 100px" :src="scope.row.thumbnail" fit="fill" />
         </template>
       </el-table-column>
-      <el-table-column prop="address" label="地址" align="center" />
-      <el-table-column prop="status" label="审核状态" align="center">
+      <el-table-column prop="categoryName" label="分类名" align="center" />
+      <el-table-column prop="delFlag" label="审核状态" align="center">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status == 0" type="success">通过</el-tag>
-          <el-tag v-if="scope.row.status == 1" type="danger">未通过</el-tag>
-          <el-tag v-if="scope.row.status == 2" type="danger">未审核</el-tag>
+          <el-tag v-if="scope.row.delFlag == 0" type="success">审核通过</el-tag>
+          <el-tag v-if="scope.row.delFlag == 1" type="danger">未通过</el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            v-hasPermission="['content:link:edit']"
+            v-if="scope.row.delFlag == 1"
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-          >修改</el-button>
+            @click="handleChangedelFlag(scope.row, '0')"
+          >解禁</el-button>
           <el-button
-            v-hasPermission="['content:link:remove']"
+            v-if="scope.row.delFlag == 0"
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-          >删除</el-button>
-          <el-button
-            v-if="scope.row.status == 2"
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleChangeStatus(scope.row, '0')"
-          >审核通过</el-button>
-          <el-button
-            v-if="scope.row.status == 2"
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleChangeStatus(scope.row, '1')"
-          >审核不通过</el-button>
+            icon="el-icon-edit"
+            @click="handleChangedelFlag(scope.row, '1')"
+          >禁用</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -137,11 +92,7 @@
           <el-input v-model="form.name" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
-          <el-input
-            v-model="form.description"
-            type="textarea"
-            placeholder="请输入描述"
-          />
+          <el-input v-model="form.description" type="textarea" placeholder="请输入描述" />
         </el-form-item>
         <el-form-item label="logo" prop="logo">
           <el-input v-model="form.logo" placeholder="请输入logo地址" />
@@ -149,8 +100,8 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择">
+        <el-form-item label="状态" prop="delFlag">
+          <el-select v-model="form.delFlag" placeholder="请选择">
             <el-option :key="'0'" label="审核通过" :value="'0'" />
             <el-option :key="'1'" label="审核未通过" :value="'1'" />
             <el-option :key="'2'" label="未审核" :value="'2'" />
@@ -167,13 +118,14 @@
 
 <script>
 import {
-  listLink,
+  listNovel,
   getLink,
   delLink,
   addLink,
   updateLink,
-  changeLinkStatus
-} from '@/api/content/link'
+  changeNoveldelFlag,
+  exportNovel
+} from '@/api/content/novel'
 
 export default {
   name: 'Link',
@@ -203,11 +155,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: null,
-        description: null,
-        address: null,
-        status: null,
-        logo: undefined
+        title: null,
+        author: null
       },
       // 表单参数
       form: {},
@@ -222,15 +171,15 @@ export default {
     /** 查询友链列表 */
     getList() {
       this.loading = true
-      listLink(this.queryParams).then((response) => {
+      listNovel(this.queryParams).then((response) => {
         this.linkList = response.rows
         this.total = response.total
         this.loading = false
       })
     },
-    handleChangeStatus(link, newStatus) {
+    handleChangedelFlag(link, newdelFlag) {
       this.loading = true
-      changeLinkStatus(link.id, newStatus).then((response) => {
+      changeNoveldelFlag(link.id, newdelFlag).then((response) => {
         this.$modal.msgSuccess('审核成功')
         this.open = false
         this.getList()
@@ -249,7 +198,7 @@ export default {
         description: null,
         address: null,
         logo: null,
-        status: '2'
+        delFlag: '2'
       }
       this.resetForm('form')
     },
@@ -262,6 +211,16 @@ export default {
     resetQuery() {
       this.resetForm('queryForm')
       this.handleQuery()
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.$modal.confirm('是否确认导出所有分类数据？').then(() => {
+        this.exportLoading = true
+        return exportNovel()
+      }).then(response => {
+        // this.$download.name(response.msg)
+        this.exportLoading = false
+      }).catch(() => { })
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -317,7 +276,7 @@ export default {
           this.getList()
           this.$modal.msgSuccess('删除成功')
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   }
 }
