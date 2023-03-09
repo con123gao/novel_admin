@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询所有角色
 export function listAllRole() {
   return request({
-    url: '/system/role/listAllRole',
+    url: '/admin/role/all',
     method: 'get'
   })
 }

@@ -19,10 +19,10 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="手机号码" prop="phonenumber">
+          <el-form-item label="邮箱" prop="email">
             <el-input
-              v-model="queryParams.phonenumber"
-              placeholder="请输入手机号码"
+              v-model="queryParams.email"
+              placeholder="请输入邮箱"
               clearable
               size="small"
               style="width: 240px"
@@ -82,7 +82,6 @@
           <el-table-column type="selection" width="55" />
           <el-table-column prop="id" label="用户编号" align="center" />
           <el-table-column prop="userName" label="用户名称" align="center" />
-          <el-table-column prop="nickName" label="用户昵称" align="center" />
           <el-table-column prop="phonenumber" label="手机号码" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template slot-scope="scope">
@@ -94,6 +93,7 @@
               />
             </template>
           </el-table-column>
+          <el-table-column prop="ip" label="ip地址" align="center" />
           <el-table-column prop="createTime" label="创建时间" align="center" />
 
           <el-table-column
@@ -134,10 +134,10 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="用户昵称" prop="nickName">
+            <el-form-item label="用户昵称" prop="userName">
               <el-input
-                v-model="form.nickName"
-                placeholder="请输入用户昵称"
+                v-model="form.userName"
+                placeholder="请输入用户名"
                 maxlength="30"
               />
             </el-form-item>
@@ -260,7 +260,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
-        phonenumber: undefined,
+        email: undefined,
         status: undefined
       },
       title: '',

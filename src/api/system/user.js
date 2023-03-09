@@ -47,7 +47,7 @@ export function resetUserPwd(userId, password) {
 // 修改用户
 export function updateUser(data) {
   return request({
-    url: '/system/user',
+    url: '/admin/user/update',
     method: 'put',
     data: data
   })
@@ -59,7 +59,7 @@ export function changeUserStatus(userId, status) {
     status
   }
   return request({
-    url: '/system/user/changeStatus',
+    url: '/admin/user/changeStatus',
     method: 'put',
     data: data
   })
