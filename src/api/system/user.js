@@ -27,7 +27,7 @@ export function addUser(data) {
 // 删除用户
 export function delUser(userId) {
   return request({
-    url: '/admin/user/deleted' + userId,
+    url: '/admin/user/deleted/' + userId,
     method: 'delete'
   })
 }
@@ -55,8 +55,8 @@ export function updateUser(data) {
 // 用户状态修改
 export function changeUserStatus(userId, status) {
   const data = {
-    userId,
-    status
+    id: userId,
+    delFlag: status
   }
   return request({
     url: '/admin/user/changeStatus',

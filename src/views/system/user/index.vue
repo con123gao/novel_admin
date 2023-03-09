@@ -61,7 +61,7 @@
               @click="handleAdd"
             >新增</el-button>
           </el-col>
-          <el-col :span="1.5">
+          <!-- <el-col :span="1.5">
             <el-button
               type="danger"
               plain
@@ -69,7 +69,7 @@
               size="mini"
               @click="handleDelete"
             >删除</el-button>
-          </el-col>
+          </el-col> -->
 
           <!-- <right-toolbar
             :show-search.sync="showSearch"
@@ -109,12 +109,12 @@
                 icon="el-icon-edit"
                 @click="handleUpdate(scope.row)"
               >修改</el-button>
-              <el-button
+              <!-- <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
-              >删除</el-button>
+              >删除</el-button> -->
             </template>
           </el-table-column>
         </el-table>
