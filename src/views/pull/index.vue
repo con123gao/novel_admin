@@ -24,6 +24,20 @@
       </el-form-item>
     </el-form>
 
+    <el-row :gutter="10" class="mb8">
+
+      <el-col :span="1.5">
+        <el-button
+          type="text"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+        >批量爬取</el-button>
+      </el-col>
+    </el-row>
+
     <el-table v-loading="loading" :data="linkList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="网站排序号" align="center" prop="sortNum" />
@@ -87,7 +101,6 @@
 import {
   listPullNovel,
   getLink,
-  delLink,
   addLink,
   updateLink,
   pullNovel,
@@ -189,7 +202,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id)
+      this.ids = selection.map((item) => item.sortNum)
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
@@ -231,15 +244,15 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids
+      const ids = row.sortNum || this.ids
       this.$modal
-        .confirm('是否确认删除友链编号为"' + ids + '"的数据项？')
+        .confirm('是否确认爬取友链编号为"' + ids + '"的数据项？')
         .then(function() {
-          return delLink(ids)
+          return pullNovel(ids)
         })
         .then(() => {
           this.getList()
-          this.$modal.msgSuccess('删除成功')
+          this.$modal.msgSuccess('后台正在爬取')
         })
         .catch(() => { })
     }
